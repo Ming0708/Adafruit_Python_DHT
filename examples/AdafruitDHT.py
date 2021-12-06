@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import sys
-
+import requests
 import Adafruit_DHT
 
 
@@ -46,11 +46,20 @@ else:
 # the results will be null (because Linux can't
 # guarantee the timing of calls to read the sensor).
 # If this happens try again!
+token = 'hxizOmdr8bEbuQp9iSVMtRf50yasnWMigLV6Tc7a3ok'
+message = '溫度超過21度'
+headers = {
+  "Authorization": "Bearer " + token,
+}
+
+payload = {'message': message }
 
 while 1:
     humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
     if humidity  is not None and temperature  is not None:
         print('Temp={0:0.1f}* Humidity={1:0.1f}%'.format(temperature , humidity ))
+        if temperature>21:
+            requests.post("https://notify-api.line.me/api/notify", headers = headers, params = payload)
     else:
         print('Failed to get reading. Try again!')
         sys.exit(1)
